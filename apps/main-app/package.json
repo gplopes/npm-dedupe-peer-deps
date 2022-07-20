@@ -1,0 +1,8 @@
+{
+  "name": "main-app",
+  "dependencies": {
+    "package-a": "file:../package-a",
+    "package-b": "file:../package-b",
+    "graphql": "15.0.0"
+  }
+}
