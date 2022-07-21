@@ -14,14 +14,15 @@ In this demo, there are 3 modules and their dependencies tree looks like this:
 
 // package=a
  "graphql": "16.5.0",
- "@graphql-tools/schema": "8.3.8", // peerDependency: graphql
- "@graphql-tools/stitch": "8.6.12" // peerDependency: graphql
+ "@graphql-tools/schema": "8.3.8", // peerDependency: graphql "^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0"
+ "@graphql-tools/stitch": "8.6.12" // peerDependency: graphql "^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0"
 
 // package-b
 "graphql": "15.0.0"
 ```
 
-The expected behavior would be:
+**Expected behavior:**
+
 ```js
 // node_modules (root)
 │  "graphql": "15.0.0" // deduped 
@@ -35,7 +36,14 @@ The expected behavior would be:
     └───"graphql": "15.0.0" // deduped (using root package)
 ```
 
-Current behavior which leads to wrong `@graphql-tools/schema` to use the wrong graphql version
+**Current behavior:**
+
+`@graphql-tools/schema` uses the wrong `graphql` version from the root project (`main-app`).
+The version of `graphql` for `@graphql-tools/schema` should be decided by the actual consumer of `@graphql-tools/schema`, which in this case is `project-a`, not `main-app`. 
+
+Deduplication is not taking this into consideration, and should consider the version of `graphql` installed in `project-a` to be the required version for another dependancies defining `graphql` as peer dependancy, like `@graphql-tools/schema` in this scenario. 
+
+Alternativelly, packages with peer dependancies should not be deduped at all for version safety. 
 
 ```js
 // node_modules (root)
